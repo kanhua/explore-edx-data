@@ -1,0 +1,74 @@
+---
+title: "Data Analysis with R—Problem Set 5"
+output: html_document
+---
+Load the packages
+```{r}
+library(ggplot2)
+data(diamonds)
+?diamonds
+```
+
+Get the dimension and summary
+```{r}
+dim(diamonds)
+summary(diamonds)
+```
+
+```{r}
+summary(diamonds$color)
+```
+
+
+```{r}
+qplot(price, data = diamonds)
+mean(diamonds$price)
+median(diamonds$price)
+```
+
+# Q1
+```{r,echo=TRUE}
+ggplot(aes(price,fill=cut),data=diamonds)+geom_bar()+facet_wrap(~color)+scale_fill_brewer(type = 'qual')
+```
+
+### Q2: Create a scatterplot of diamond price vs. table and color the points by the cut of the diamond.
+```{r}
+ggplot(aes(x=table,y=price,color=cut),data=diamonds)+
+  geom_point(aes(color=cut))+scale_color_brewer(type='qual')
+```
+Note: in Q1, we use ```scale_fill_brewer``` to set the theme of color, but in Q2 we use ```scale_color_brewer```.
+
+
+### Q4:
+Create a scatterplot of diamond price vs. volume (x * y * z) and color the points by the clarity of diamonds. Use scale on the y-axis to take the log10 of price. You should also omit the top 1% of diamond volumes from the plot.
+
+Note: Volume is a very rough approximation of a diamond's actual volume.
+
+Note: In the link, a color palette of type 'div' was used to color the scatterplot using ```scale_color_brewer(type = 'div')```
+
+Note: ```quantile(diamonds$vol,0.99)``` is different from ```0.99*max(diamonds$vol)```.
+The former takes the last 99% of the rank, while the later one takes 0.99 of the maximum value.
+
+```{r}
+diamonds$vol = with(diamonds,x * y * z)
+s_diamonds = subset(diamonds,vol < quantile(diamonds$vol,0.99))
+ggplot(aes(x = vol,y = price,color = clarity),data = s_diamonds) +
+  geom_point() +
+  scale_y_log10() +
+  scale_color_brewer(type = 'div')
+```
+
+### Extra: Density plot
+examples from ggplot book p.69.
+We can use ```y=..density``` to normalize the bin counts and presnets the density.
+```{r}
+depth_dist <- ggplot(diamonds,aes(depth)) + xlim(58,68)
+depth_dist + geom_histogram(aes(y = ..density..),binwidth = 0.1) + 
+  facet_grid(cut ~.)
+depth_dist + geom_histogram(aes(fill = cut),binwidth = 0.1,
+                            position = "fill")
+depth_dist + geom_freqpoly(aes(y = ..density..,color = cut),
+                           binwidth = 0.1)
+
+```
+

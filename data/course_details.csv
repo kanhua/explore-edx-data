@@ -1,0 +1,17 @@
+course_id,institution,course_code,short_title,abbrev_course_title,long_title
+HarvardX/CB22x/2013_Spring,Harvard,CB22x,HeroesX,HeroesX,The Ancient Greek Hero
+HarvardX/CS50x/2012,Harvard,CS50x,CS50X,CS50X,Introduction to Computer Science I
+HarvardX/ER22x/2013_Spring,Harvard,ER22x,JusticeX,JusticeX,Justice
+HarvardX/PH207x/2012_Fall,Harvard,PH207x,HealthStat,HealthStat,Health in Numbers: Quantitative Methods in Clinical and Public Health Research
+HarvardX/PH278x/2013_Spring,Harvard,PH278x,HealthEnv,HealthEnv,Human Health and Global Environment Change
+MITx/6.002x/2012_Fall,MIT,6.002x,Circuits,Circuits-1,Circuits and Electronics-Fall
+MITx/2.01x/2013_Spring,MIT,2.01x,Structures,Structures,Elements of Structures
+MITx/14.73x/2013_Spring,MIT,14.73x,Poverty,Poverty,The Challenges of Global Poverty
+MITx/6.002x/2013_Spring,MIT,6.002x,Circuits,Circuits-2,Circuits and Electronics-Spring
+MITx/3.091x/2012_Fall,MIT,3.091x,SSChem,SSChem-1,Introduction to Solid State Chemistry
+MITx/3.091x/2013_Spring,MIT,3.091x,SSChem,SSChem-2,Introduction to Solid State Chemistry
+MITx/6.00x/2012_Fall,MIT,6.00x,CSM,CSM12,Introduction to Computer Science and Programming
+MITx/6.00x/2013_Spring,MIT,6.00x,CSM,CSM13,Introduction to Computer Science and Programming
+MITx/7.00x/2013_Spring,MIT,7.00x,Biology,Biology,Introduction to Biology-The Secret of Life
+MITx/8.02x/2013_Spring,MIT,8.02x,EM,EM,Electricity and Magnetism
+MITx/8.MReV/2013_Summer,MIT,8.MReV,MechRev,MechRev,Mechanics Review

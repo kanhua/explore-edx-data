@@ -1,0 +1,208 @@
+---
+title: "Explore edx data"
+output: html_document
+---
+
+```{r}
+# Load packages
+require(dplyr)
+require(ggplot2)
+```
+
+### Load the data
+```{r}
+data.path="/Users/kanhua/Documents/Big Data/edX open data 2013/"
+rawfile="HMXPC13_DI_v2_5-14-14.csv"
+#edxdata<-read.csv(paste(data.path,rawfile,sep=""))
+#save(edxdata,file=paste(data.path,"HMXPC13_DI_v2_5-14-14.RData",sep=""))
+load(paste(data.path,"HMXPC13_DI_v2_5-14-14.RData",sep=""))
+edxdata$certified=as.logical(edxdata$certified)
+edxdata$registered=as.logical(edxdata$registered)
+edxdata$explored=as.logical(edxdata$explored)
+```
+
+### Load course details data:
+```{r}
+course.data.path="/Users/kanhua/Dropbox/Documents in Dropbox/Open Courseware/Udacity courseware/Data Analyst Nanodegree/Udacity DA projects/P3 Explore Data/data/course_details.csv"
+course.data<-read.csv(course.data.path)
+head(course.data)
+```
+
+### Join the data
+```{r}
+edxdata<-inner_join(x=edxdata,y=course.data,by="course_id")
+```
+
+Get dimension of data:
+```{r}
+dim(edxdata)
+```
+Show head and tail of the data
+```{r}
+head(edxdata)
+tail(edxdata)
+```
+
+Get the columns
+```{r}
+names(edxdata)
+```
+
+Total number of unique users:
+```{r}
+dim(unique(edxdata$userid_DI))
+```
+
+The course names
+```{r}
+dim(unique(edxdata$course_id))
+```
+
+
+Get the number of user_DI
+```{r}
+users<-edxdata %>%
+  group_by(userid_DI) %>%
+  summarise(course_taken=n(),
+                 total_certified=sum(certified))
+
+users=inner_join(users,edxdata,by="userid_DI")
+table(users$total_certified)
+```
+
+plot the histogram of registered users vs. LOE_DI
+```{r}
+ggplot(aes(LoE_DI),data=users)+geom_bar()
+```
+
+plot the histogram of registered users vs. gender
+```{r}
+ggplot(aes(gender),data=users)+geom_bar()
+```
+Other ideas: breakdown gender with course
+
+plot the histogram of registered users vs. age
+```{r}
+users$age=2013-users$YoB
+ggplot(aes(age,fill=course_taken),data=subset(users,users$age>0))+geom_bar(binwidth=5)
+```
+
+
+
+plot the histogram of certified users by ```LoE_DI```
+```{r}
+ggplot(aes(total_certified,fill=LoE_DI),data=subset(users,!is.na(users$LoE_DI)))+
+  geom_bar()+
+  scale_x_discrete()+
+  scale_y_log10()
+```
+
+plot the histogram of certified users by ```gender```
+```{r}
+ggplot(aes(total_certified,fill=gender),data=subset(users,!is.na(users$gender)))+
+  geom_bar()+
+  scale_x_discrete()+
+  scale_y_log10()
+```
+
+deal with age
+```{r}
+users$age=2012-users$YoB
+table(users$age)
+table(users$YoB)
+```
+
+#
+```{r}
+courses<-group_by(edxdata,course_id)
+courses<-summarise(courses,joined_users=n(),
+                   passed_num=sum(certified),
+                   explored_num=sum(explored),
+                   registered_num=sum(registered),
+                   total_nforum_posts=sum(nforum_posts))
+courses$pass.rate<-courses$passed_num/courses$registered_num
+```
+
+explored rate: passed/registered
+```{r}
+courses$pass.rate<-courses$passed_num/courses$registered_num
+```
+
+pass rate: passed/explored
+```{r}
+courses$hangon.rate<-courses$passed_num/courses$explored_num
+```
+
+
+```{r}
+qplot(hangon.rate,data=courses)
+unique(edxdata$LoE_DI)
+unique(edxdata$gender)
+```
+
+### Participation of the courses
+```{r}
+course.stat<-group_by(edxdata,course_code)
+
+course.stat<-summarise(course.stat,t_certified=sum(certified),
+                       t_viewed=sum(viewed),
+                       t_explored=sum(explored),
+                       t_registered=sum(registered))
+
+ggplot(aes(y=t_registered,x=course_code),data=course.stat)+geom_bar(stat="identity")
+```
+
+### Plot the distribution of nevents
+```{r}
+
+ggplot(aes(nevents),data=edxdata)+geom_freqpoly(aes(y=..density..,color=course_code))+xlim(0,1000)
+```
+
+
+### Plot the distrubution of nevents of certified users only
+```{r}
+ggplot(aes(nevents),data=filter(edxdata,certified==1))+geom_freqpoly(aes(y=..density..,color=course_code))+xlim(0,30000)
+```
+
+### Analyze average login events of certified users
+```{r}
+cert.edxdata <- filter(edxdata,certified == 1,!is.na(nevents))
+
+cert.course.stat <- cert.edxdata %>%
+  group_by(course_code) %>%
+  summarise(mean_nevents = mean(as.double(nevents)),
+            med_nevents = median(as.double(nevents))) %>%
+  semi_join(course.data,by = "course_code") #use semi_join because we only want to get one result from course.data
+
+cert.course.stat
+
+```
+
+### Plot the degree distribution of certified users
+```{r}
+ggplot(aes(LoE_DI),data=filter(edxdata,certified==1))+geom_histogram()+facet_wrap(~course_code)
+
+#ggplot(aes(short_title,fill=LoE_DI),data=filter(edxdata,certified==1))+geom_histogram(position="fill")
+```
+
+### Plot the degree distribution of all users
+
+```{r}
+
+ggplot(aes(LoE_DI),data=edxdata)+facet_grid(course_code~.)+geom_histogram()
+
+ggplot(aes(short_title,fill=LoE_DI),data=edxdata)+geom_histogram(position="fill")
+```
+
+### Extra: plot npost against nevents:
+
+```{r}
+
+ggplot(aes(x=ndays_act,y=nevents,color=certified),data=edxdata)+geom_point(position="jitter")+ylim(0,10000)
+
+```
+
+```{r}
+
+ggplot(aes(nevents),data=edxdata)+geom_histogram()+xlim(0,10000)
+```

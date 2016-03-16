@@ -1,0 +1,34 @@
+---
+title: "dimond problem"
+output: html_document
+---
+
+Load the packages
+```{r}
+library(ggplot2)
+data(diamonds)
+?diamonds
+```
+
+Get the dimension and summary
+```{r}
+dim(diamonds)
+summary(diamonds)
+```
+
+```{r}
+diamonds$color
+
+```
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+qplot(price, data = diamonds)
+mean(diamonds$price)
+median(diamonds$price)
+```
+
+#refer to ggplot page 125
+```{r}
+ggplot(aes(price,fill=cut),data=diamonds)+geom_bar()+facet_wrap(~color)+scale_fill_brewer(type = 'qual')
+```

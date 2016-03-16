@@ -1,0 +1,26 @@
+---
+title: "explore edx data archived code"
+output: html_document
+---
+
+
+Analyze average login events of certified users
+```{r,echo=FALSE,warning=FALSE}
+cert.edxdata <- filter(edxdata,certified == 1,!is.na(nevents))
+cert.course.stat <- cert.edxdata %>%
+  group_by(course_code) %>%
+  summarise(mean_nevents = mean(as.double(nevents)),
+            med_nevents = median(as.double(nevents))) %>%
+  semi_join(course.data,by = "course_code")
+#use semi_join because we only want to get one result from course.data
+cert.course.stat
+```
+
+##### Distribution of gender of the certificates earned by each registrant.
+```{r,echo=FALSE,warning=FALSE}
+ggplot(aes(user.certificates,fill = gender),
+       data = subset(users,!is.na(users$gender))) +
+       geom_bar() +
+       scale_x_discrete() +
+       scale_y_log10()
+```
